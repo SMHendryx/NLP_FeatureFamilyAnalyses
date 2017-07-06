@@ -77,3 +77,12 @@ text = paste0("r = ", r)
 p4 = p4 + annotate("text",x = .125, y = .275, label = text)
 p4
 
+p5 = ggplot(data = DT, mapping = aes(x = precision, y = recall)) + geom_point() + theme_bw() + geom_smooth(method = "lm")
+p5 = p5 + labs(x = "Precision", y = "Recall") + ggtitle("Feature Family Subset Classification Performance")
+p5 = p5 + theme(plot.title = element_text(hjust = 0.5))
+m = lm(DT$recall ~ DT$precision)
+r = format(summary(m)$r.squared ^ .5, digits = 3)
+text = paste0("r = ", r)
+p5 = p5 + annotate("text",x = .125, y = .275, label = text)
+p5
+#Simpson's paradox
