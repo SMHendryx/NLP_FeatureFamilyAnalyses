@@ -1,5 +1,6 @@
 library("ggplot2")
 library("data.table")
+library("plotly")
 
 #setwd:
 setwd("/Users/seanmhendryx/Research/context/sorted_feature_families/")
@@ -39,7 +40,7 @@ lm_eqnr2 <- function(df){
 #            geom_point()
 #p1 <- p + geom_text(x = 25, y = 300, label = lm_eqn(df), parse = TRUE)
 
-p = ggplot(data = DT, mapping = aes(x = sparseness_mean, y = f1)) + geom_point() + theme_bw() + geom_smooth(method = "lm")
+p = ggplot(data = DT, mapping = aes(x = sparseness_mean, y = f1)) + geom_point(mapping = aes(color = numFeatures_mean)) + theme_bw() + geom_smooth(method = "lm")
 p = p + labs(x = "Feature Matrix Density", y = "F1 Score") + ggtitle("Feature Family Subset Classification Performance")
 p = p + theme(plot.title = element_text(hjust = 0.5))
 m = lm(DT$f1 ~ DT$sparseness_mean)
@@ -48,8 +49,13 @@ text = paste0("r = ", r)
 p = p + annotate("text",x = .05, y = .275, label = text)
 p
 
+pb1 = plotly_build(p)
+str(pb1$layout$legend)
+pb1$x$data[[1]]$text = DT$feature_family_subset 
+pb1
 
-p2 = ggplot(data = DT, mapping = aes(x = recall, y = f1)) + geom_point() + theme_bw() + geom_smooth(method = "lm")
+
+p2 = ggplot(data = DT, mapping = aes(x = recall, y = f1)) + geom_point(mapping = aes(color = numFeatures_mean)) + theme_bw() + geom_smooth(method = "lm")
 p2 = p2 + labs(x = "Recall", y = "F1 Score") + ggtitle("Feature Family Subset Classification Performance")
 p2 = p2 + theme(plot.title = element_text(hjust = 0.5))
 m = lm(DT$f1 ~ DT$recall)
@@ -57,9 +63,10 @@ r = format(summary(m)$r.squared ^ .5, digits = 3)
 text = paste0("r = ", r)
 p2 = p2 + annotate("text",x = .3, y = .275, label = text)
 p2
+ply = ggplotly(p2)
+ply 
 
-
-p3 = ggplot(data = DT, mapping = aes(x = precision, y = f1)) + geom_point() + theme_bw() + geom_smooth(method = "lm")
+p3 = ggplot(data = DT, mapping = aes(x = precision, y = f1)) + geom_point(mapping = aes(color = numFeatures_mean)) + theme_bw() + geom_smooth(method = "lm")
 p3 = p3 + labs(x = "Precision", y = "F1 Score") + ggtitle("Feature Family Subset Classification Performance")
 p3 = p3 + theme(plot.title = element_text(hjust = 0.5))
 m = lm(DT$f1 ~ DT$precision)
@@ -67,6 +74,8 @@ r = format(summary(m)$r.squared ^ .5, digits = 3)
 text = paste0("r = ", r)
 p3 = p3 + annotate("text",x = .125, y = .275, label = text)
 p3
+ply = ggplotly(p3)
+ply
 
 p4 = ggplot(data = DT, mapping = aes(x = numFeatures_mean, y = f1)) + geom_point() + theme_bw() + geom_smooth(method = "lm")
 p4 = p4 + labs(x = "Mean Number of Features", y = "F1 Score") + ggtitle("Feature Family Subset Classification Performance")
@@ -77,7 +86,7 @@ text = paste0("r = ", r)
 p4 = p4 + annotate("text",x = .125, y = .275, label = text)
 p4
 
-p5 = ggplot(data = DT, mapping = aes(x = precision, y = recall)) + geom_point() + theme_bw() + geom_smooth(method = "lm")
+p5 = ggplot(data = DT, mapping = aes(x = precision, y = recall)) + geom_point(mapping = aes(color = numFeatures_mean)) + theme_bw() + geom_smooth(method = "lm")
 p5 = p5 + labs(x = "Precision", y = "Recall") + ggtitle("Feature Family Subset Classification Performance")
 p5 = p5 + theme(plot.title = element_text(hjust = 0.5))
 m = lm(DT$recall ~ DT$precision)
@@ -86,3 +95,15 @@ text = paste0("r = ", r)
 p5 = p5 + annotate("text",x = .125, y = .275, label = text)
 p5
 #Simpson's paradox
+ply = ggplotly(p5)
+ply
+
+pb = plotly_build(p5)
+str(pb$layout$legend)
+pb$x$data[[1]]$text = DT$feature_family_subset 
+pb
+
+DT[feature_family_subset %like% "Positional"]
+p6 = ggplot(data = DT[feature_family_subset %like% "Positional"], mapping = aes(recall)) + geom_density() + theme_bw() + labs(x = "Recall")
+
+
